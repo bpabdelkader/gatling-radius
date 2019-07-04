@@ -1,0 +1,185 @@
+
+= Gatling Plugin for Radius image:https://travis-ci.org/bpabdelkader/gatling-radius.svg?branch=master["Build Status", link="https://travis-ci.org/bpabdelkader/gatling-radius"]
+
+image:https://gatling.io/wp-content/uploads/2019/04/Gatling-logo-2019.png[Gatling,link="http://gatling.io/",120,120]
+
+== Introduction
+
+Support for load testing Radius endpoints using Gatling 3.x.x
+
+
+== Usage
+
+==== Declare Radius Protocol
+
+```scala
+implicit val radiusProtocol: RadiusProtocol = radius
+	.host("127.0.0.1")
+	.sharedKey("mySharedKey")
+```
+
+==== Declare a test Scenario, which includes: 
+  
+  - Authentication Access Request
+  - Accounting Start
+  - Accounting Interim Update
+  - Accounting Stop
+
+```scala
+val scn = scenario("Access Request")
+    .exec(
+      radius("Access Request")
+        .username("login01")
+        .password("passwd01")
+        .properties(
+          Map(
+            "NAS-Identifier" -> "AANDT",
+            "NAS-IP-Address" -> "1.2.3.4",
+            "Calling-Station-Id" -> "3309567846",
+            "Called-Station-Id" -> "TESTING",
+          ))
+        .authenticate())
+    .exec(
+      radius("Acct Start")
+        .username("login001")
+        .properties(
+          Map(
+            "NAS-Identifier" -> "AANDT",
+            "NAS-IP-Address" -> "1.2.3.4",
+            "Calling-Station-Id" -> "3309567846",
+            "Called-Station-Id" -> "TESTING",
+          ))
+        .accountStart())
+    .exec(
+      radius("Interim Update")
+        .username("login001")
+        .properties(
+          Map(
+            "NAS-Identifier" -> "AANDT",
+            "NAS-IP-Address" -> "1.2.3.4",
+            "Calling-Station-Id" -> "3309567846",
+            "Called-Station-Id" -> "TESTING",
+          ))
+        .interimUpdate())
+    .exec(
+      radius("Acct Stop")
+        .username("login001")
+        .properties(
+          Map(
+            "NAS-Identifier" -> "AANDT",
+            "NAS-IP-Address" -> "1.2.3.4",
+            "Calling-Station-Id" -> "3309567846",
+            "Called-Station-Id" -> "TESTING",
+          ))
+        .accountStop()
+    )
+
+  setUp(scn.inject(atOnceUsers(1))).protocols(radiusProtocol)
+}
+```
+
+
+== Run
+
+Run single simulation implemented in `com.ngenia.radius.RadiusSimulation` class through:
+
+==== maven test profile
+
+```scala
+<!-- test profile-->
+<profiles>
+    <profile>
+        <id>test</id>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>io.gatling</groupId>
+                    <artifactId>gatling-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <configuration>
+                        <simulationsFolder>src/test/scala</simulationsFolder>
+                        <runMultipleSimulations>false</runMultipleSimulations>
+                        <simulationClass>com.ngenia.radius.RadiusSimulation</simulationClass>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>run-on-test</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+</profiles>
+```
+
+```scala
+$ mvn test -Ptest
+  
+[INFO] --- gatling-maven-plugin:3.0.0:test (run-on-test) @ gatling-radius ---
+Simulation com.ngenia.radius.RadiusSimulation started...
+log4j:WARN No appenders could be found for logger (org.tinyradius.util.RadiusClient).
+log4j:WARN Please initialize the log4j system properly.
+
+================================================================================
+2019-07-01 14:46:27                                           0s elapsed
+---- Requests ------------------------------------------------------------------
+> Global                                                   (OK=4      KO=0     )
+> Access Request                                           (OK=1      KO=0     )
+> Acct Start                                               (OK=1      KO=0     )
+> Interim Update                                           (OK=1      KO=0     )
+> Acct Stop                                                (OK=1      KO=0     )
+
+---- Access Request ------------------------------------------------------------
+[##########################################################################]100%
+waiting: 0      / active: 0      / done: 1
+================================================================================
+
+Simulation com.ngenia.radius.RadiusSimulation completed in 0 seconds
+Parsing log file(s)...
+Parsing log file(s) done
+Generating reports...
+
+================================================================================
+---- Global Information --------------------------------------------------------
+> request count                                          4 (OK=4      KO=0     )
+> min response time                                      0 (OK=0      KO=-     )
+> max response time                                     21 (OK=21     KO=-     )
+> mean response time                                     5 (OK=5      KO=-     )
+> std deviation                                          9 (OK=9      KO=-     )
+> response time 50th percentile                          0 (OK=0      KO=-     )
+> response time 75th percentile                          5 (OK=5      KO=-     )
+> response time 95th percentile                         18 (OK=18     KO=-     )
+> response time 99th percentile                         20 (OK=20     KO=-     )
+> mean requests/sec                                      4 (OK=4      KO=-     )
+---- Response Time Distribution ------------------------------------------------
+> t < 800 ms                                             4 (100%)
+> 800 ms < t < 1200 ms                                   0 (  0%)
+> t > 1200 ms                                            0 (  0%)
+> failed                                                 0 (  0%)
+================================================================================
+
+Reports generated in 0s.
+Please open the following file: \gatling-radius\target\gatling\radiussimulation-20190701124626791\index.html
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 11.982 s
+[INFO] Finished at: 2019-07-01T14:46:27+02:00
+[INFO] Final Memory: 19M/981M
+[INFO] ------------------------------------------------------------------------
+```
+
+==== Intellij
+
+RadiusSimulation.class is Runnable, thus the test scenario could be run directly from the intellij test package
+
+image:https://i.postimg.cc/wxXzKGpF/intellij.png["Build Status", link="https://i.postimg.cc/wxXzKGpF/intellij.png"]
+
+== License
+
+Released under the [MIT License](http://www.opensource.org/licenses/MIT).
