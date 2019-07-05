@@ -49,6 +49,8 @@ case class RadiusAction(
         case Failure(e) => (None, (KO, Some(radiusAttributes.requestName + ": " + e.getMessage)))
       }
 
+	radiusClient.close()
+	
     log(start, clock.nowMillis, response._2, radiusAttributes.requestName, session, statsEngine)
 
     next !
