@@ -1,5 +1,6 @@
 
-= Gatling Plugin for Radius image:https://travis-ci.org/bpabdelkader/gatling-radius.svg?branch=master["Build Status", link="https://travis-ci.org/bpabdelkader/gatling-radius"]
+= Gatling Plugin for Radius image:https://travis-ci.org/bpabdelkader/gatling-radius.svg?branch=master["Build Status", link="https://travis-ci.org/bpabdelkader/gatling-radius"] image:https://jitpack.io/v/bpabdelkader/gatling-radius.svg["JitPack", link="https://jitpack.io/#bpabdelkader/gatling-radius"]
+
 
 image:https://gatling.io/wp-content/uploads/2019/04/Gatling-logo-2019.png[Gatling,link="http://gatling.io/",120,120]
 
