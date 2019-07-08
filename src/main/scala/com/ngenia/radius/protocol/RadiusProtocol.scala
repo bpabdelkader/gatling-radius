@@ -1,10 +1,8 @@
 package com.ngenia.radius.protocol
 
-
 import io.gatling.core.CoreComponents
 import io.gatling.core.config.GatlingConfiguration
-import io.gatling.core.protocol.{Protocol, ProtocolKey }
-
+import io.gatling.core.protocol.{Protocol, ProtocolKey}
 
 object RadiusProtocol {
 
@@ -22,9 +20,10 @@ object RadiusProtocol {
 }
 
 case class RadiusProtocol(
-    host:        String,
-    sharedKey:   String
-) extends Protocol {
+                           host: String,
+                           sharedKey: String,
+                           replyTimeout: Int,
+                         ) extends Protocol {
 
   type Components = RadiusComponents
 }

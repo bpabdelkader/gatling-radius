@@ -11,6 +11,7 @@ class RadiusSimulation extends Simulation {
   implicit val radiusProtocol: RadiusProtocol = radius
     .host("10.20.30.40")
     .sharedKey("mySharedKey")
+    .replyTimeout(1000)
 
   val scn = scenario("Access Request")
     .exec(

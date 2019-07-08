@@ -1,19 +1,17 @@
 package com.ngenia.radius.protocol
 
-
 case object RadiusProtocolBuilderBase {
-  def host(host: String) = RadiusProtocolBuilderSharedKey(host) // Step 1
+  def host(host: String) = RadiusProtocolBuilderSharedKey(host)
 }
 
-case class RadiusProtocolBuilderSharedKey(
-    host: String
-) {
-  def sharedKey(sharedKey: String) = RadiusProtocolBuilder(host, sharedKey) // Step 2
+case class RadiusProtocolBuilderSharedKey(host: String) {
+  def sharedKey(sharedKey: String) = RadiusProtocolBuilderReplyTimeout(host, sharedKey)
 }
 
-case class RadiusProtocolBuilder(
-    host:        String,
-    sharedKey:   String
-) {
-  def build(): RadiusProtocol = new RadiusProtocol(host, sharedKey)
+case class RadiusProtocolBuilderReplyTimeout(host: String, sharedKey: String) {
+  def replyTimeout(replyTimeout: Int) = RadiusProtocolBuilder(host, sharedKey, replyTimeout)
+}
+
+case class RadiusProtocolBuilder(host: String, sharedKey: String, replyTimeout: Int) {
+  def build(): RadiusProtocol = new RadiusProtocol(host, sharedKey, replyTimeout)
 }

@@ -3,7 +3,6 @@ package com.ngenia.radius.dsl
 import com.ngenia.radius.protocol._
 import io.gatling.core.config.GatlingConfiguration
 
-
 trait RadiusDsl {
 
   def radius(implicit configuration: GatlingConfiguration) = RadiusProtocolBuilderBase

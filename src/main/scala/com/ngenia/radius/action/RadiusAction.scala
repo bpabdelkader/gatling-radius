@@ -39,7 +39,9 @@ case class RadiusAction(
       radiusProtocol.sharedKey
     )
 
-    val response: (Option[RadiusPacket],(Status, Option[String])) =
+    radiusClient.setSocketTimeout(radiusProtocol.replyTimeout)
+
+    val response: (Option[RadiusPacket], (Status, Option[String])) =
       Try(sendRequest(radiusClient, radiusAttributes)) match {
         case Success(radiusPacket) => (Some(radiusPacket),
           radiusPacket.getPacketType match {
@@ -49,8 +51,8 @@ case class RadiusAction(
         case Failure(e) => (None, (KO, Some(radiusAttributes.requestName + ": " + e.getMessage)))
       }
 
-	radiusClient.close()
-	
+    radiusClient.close()
+
     log(start, clock.nowMillis, response._2, radiusAttributes.requestName, session, statsEngine)
 
     next !
@@ -88,9 +90,9 @@ case class RadiusAction(
       accountingRequest = new AccountingRequest(
         resolvedUsername,
         requestType match {
-          case Type.ACCOUNT_START           => 1
-          case Type.ACCOUNT_STOP            => 2
-          case Type.ACCOUNT_INTERIM_UPDATE  => 3
+          case Type.ACCOUNT_START => 1
+          case Type.ACCOUNT_STOP => 2
+          case Type.ACCOUNT_INTERIM_UPDATE => 3
         })
 
       for ((k, v) <- properties.asInstanceOf[Map[String, AnyRef]])
@@ -107,7 +109,7 @@ case class RadiusAction(
   private def sendRequest(radiusClient: RadiusClient, radiusAttributes: RadiusAttributes)(implicit requestType: Type, session: Session): RadiusPacket = {
     requestType match {
       case Type.ACCESS_REQUEST => radiusClient.authenticate(radiusAttributes)
-      case _                   => radiusClient.account(radiusAttributes)
+      case _ => radiusClient.account(radiusAttributes)
     }
   }
 

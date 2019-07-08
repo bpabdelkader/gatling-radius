@@ -1,9 +1,6 @@
 
 = Gatling Plugin for Radius image:https://travis-ci.org/bpabdelkader/gatling-radius.svg?branch=master["Build Status", link="https://travis-ci.org/bpabdelkader/gatling-radius"] image:https://jitpack.io/v/bpabdelkader/gatling-radius.svg["JitPack", link="https://jitpack.io/#bpabdelkader/gatling-radius"]
 
-
-image:https://gatling.io/wp-content/uploads/2019/04/Gatling-logo-2019.png[Gatling,link="http://gatling.io/",120,120]
-
 == Introduction
 
 Support for load testing Radius endpoints using Gatling 3.x.x
@@ -11,12 +8,34 @@ Support for load testing Radius endpoints using Gatling 3.x.x
 
 == Usage
 
+==== Declare Maven Project dependency 
+
+===== Add the JitPack repository to your build file
+```scala
+<repositories>
+    <repository>
+	 <id>jitpack.io</id>
+	 <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+
+===== Add the dependency
+```scala
+<dependency>
+    <groupId>com.github.bpabdelkader</groupId>
+    <artifactId>gatling-radius</artifactId>
+   <version>1.0.0</version>
+</dependency>
+```
 ==== Declare Radius Protocol
 
 ```scala
 implicit val radiusProtocol: RadiusProtocol = radius
 	.host("127.0.0.1")
 	.sharedKey("mySharedKey")
+	.replyTimeout(1000)
+
 ```
 
 ==== Declare a test Scenario, which includes: 
