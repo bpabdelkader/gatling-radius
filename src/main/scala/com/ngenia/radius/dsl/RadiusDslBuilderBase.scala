@@ -7,7 +7,6 @@ import io.gatling.core.config.GatlingConfiguration
 
 import com.ngenia.radius.action.RadiusActionBuilder
 import com.ngenia.radius.request._
-import com.ngenia.radius.request.RadiusAttributes
 
 case class RadiusDslBuilderBase(requestName: String) {
   def username(username: Expression[String]): RadiusDslBuilderPassword = RadiusDslBuilderPassword(configuration, requestName, username)

@@ -14,54 +14,55 @@ class RadiusSimulation extends Simulation {
     .replyTimeout(1000)
 
   val scn = scenario("Access Request")
+    .feed(csv("data/dataFeeder.csv").circular)
     .exec(
       radius("Access Request")
-        .username("login001")
-        .password("passwd001")
+        .username("${username}")
+        .password("${password}")
         .properties(
           Map(
-            "NAS-Identifier" -> "ATANDT",
-            "NAS-IP-Address" -> "1.2.3.4",
-            "Calling-Station-Id" -> "33012345678",
-            "Called-Station-Id" -> "TESTING",
+            "NAS-Identifier" -> "${NAS-Identifier}",
+            "NAS-IP-Address" -> "${NAS-IP-Address}",
+            "Calling-Station-Id" -> "${Calling-Station-Id}",
+            "Called-Station-Id" -> "${Called-Station-Id}",
           ))
         .authenticate())
-    .exec(
+    /*.exec(
       radius("Acct Start")
-        .username("login001")
+        .username("${username}")
         .properties(
           Map(
-            "NAS-Identifier" -> "ATANDT",
-            "NAS-IP-Address" -> "1.2.3.4",
-            "Calling-Station-Id" -> "33012345678",
-            "Called-Station-Id" -> "TESTING",
+            "NAS-Identifier" -> "${NAS-Identifier}",
+            "NAS-IP-Address" -> "${NAS-IP-Address}",
+            "Calling-Station-Id" -> "${Calling-Station-Id}",
+            "Called-Station-Id" -> "${Called-Station-Id}",
           ))
         .accountStart())
     .exec(
       radius("Interim Update")
-        .username("login001")
+        .username("${username}")
         .properties(
           Map(
-            "NAS-Identifier" -> "ATANDT",
-            "NAS-IP-Address" -> "1.2.3.4",
-            "Calling-Station-Id" -> "33012345678",
-            "Called-Station-Id" -> "TESTING",
+            "NAS-Identifier" -> "${NAS-Identifier}",
+            "NAS-IP-Address" -> "${NAS-IP-Address}",
+            "Calling-Station-Id" -> "${Calling-Station-Id}",
+            "Called-Station-Id" -> "${Called-Station-Id}",
           ))
         .interimUpdate())
     .exec(
       radius("Acct Stop")
-        .username("login001")
+        .username("${username}")
         .properties(
           Map(
-            "NAS-Identifier" -> "ATANDT",
-            "NAS-IP-Address" -> "1.2.3.4",
-            "Calling-Station-Id" -> "33012345678",
-            "Called-Station-Id" -> "TESTING",
+            "NAS-Identifier" -> "${NAS-Identifier}",
+            "NAS-IP-Address" -> "${NAS-IP-Address}",
+            "Calling-Station-Id" -> "${Calling-Station-Id}",
+            "Called-Station-Id" -> "${Called-Station-Id}",
           ))
-        .accountStop()
-    )
+        .accountStop())*/
 
-  setUp(scn.inject(atOnceUsers(1))).protocols(radiusProtocol)
+  setUp(scn.inject(atOnceUsers(1)))
+    .protocols(radiusProtocol)
 }
 
 object RadiusSimulation {

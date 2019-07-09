@@ -1,6 +1,5 @@
 package com.ngenia.radius.action
 
-
 import io.gatling.core.action.builder.ActionBuilder
 import io.gatling.core.action.Action
 import io.gatling.core.structure.ScenarioContext
@@ -9,7 +8,6 @@ import io.gatling.core.config.GatlingConfiguration
 
 import com.ngenia.radius.request._
 import com.ngenia.radius.protocol.{RadiusComponents, RadiusProtocol}
-
 
 case class RadiusActionBuilder(requestType: com.ngenia.radius.request.Type, radiusAttributes: RadiusAttributes, configuration: GatlingConfiguration) extends ActionBuilder {
 

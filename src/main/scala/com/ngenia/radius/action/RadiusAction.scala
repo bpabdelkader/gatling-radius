@@ -1,6 +1,5 @@
 package com.ngenia.radius.action
 
-
 import scala.util.{Failure, Success, Try}
 
 import io.gatling.core.action._

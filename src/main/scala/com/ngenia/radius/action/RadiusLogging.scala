@@ -8,14 +8,6 @@ import io.gatling.core.util.NameGen
 
 trait RadiusLogging extends ChainableAction with NameGen {
 
-  def log(start: Long,
-          end: Long,
-          status: (Status, Option[String]),
-          requestName: String,
-          session: Session,
-          statsEngine: StatsEngine
-         ): Session = {
+  def log(start: Long, end: Long, status: (Status, Option[String]), requestName: String, session: Session, statsEngine: StatsEngine) =
     statsEngine.logResponse(session, requestName, start, end, status._1, None, status._2)
-    session.logGroupRequest(start, end, status._1)
-  }
 }
