@@ -1,6 +1,7 @@
 package com.ngenia.radius.action
 
 import scala.util.{Failure, Success}
+
 import io.gatling.core.action._
 import io.gatling.core.session.Session
 import io.gatling.core.stats.StatsEngine
@@ -8,11 +9,11 @@ import io.gatling.commons.util.Clock
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+
 import com.ngenia.radius.client
 import com.ngenia.radius.client.RadiusUtils
 import com.ngenia.radius.protocol.RadiusProtocol
 import com.ngenia.radius.request._
-import io.gatling.commons.stats.OK
 
 case class RadiusAction(
                          requestType: Type,
