@@ -9,7 +9,7 @@ case class RadiusProtocolBuilderSharedKey(host: String) {
 }
 
 case class RadiusProtocolBuilderReplyTimeout(host: String, sharedKey: String) {
-  def replyTimeout(replyTimeout: Int) = RadiusProtocolBuilder(host, sharedKey, replyTimeout)
+  def replyTimeout(replyTimeout: Int) = RadiusProtocolBuilder(host, sharedKey, replyTimeout) // Step 2
 }
 
 case class RadiusProtocolBuilder(host: String, sharedKey: String, replyTimeout: Int) {

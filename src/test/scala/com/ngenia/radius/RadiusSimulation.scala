@@ -1,17 +1,18 @@
 package com.ngenia.radius
 
-import com.ngenia.radius.Predef._
-import com.ngenia.radius.protocol._
 import io.gatling.app.Gatling
 import io.gatling.core.Predef._
 import io.gatling.core.config.GatlingPropertiesBuilder
+
+import com.ngenia.radius.Predef._
+import com.ngenia.radius.protocol._
 
 class RadiusSimulation extends Simulation {
 
   implicit val radiusProtocol: RadiusProtocol = radius
     .host("10.20.30.40")
     .sharedKey("mySharedKey")
-    .replyTimeout(1000)
+    .replyTimeout(1000) // replyTimeout in ms
 
   val scn = scenario("Access Request")
     .feed(csv("data/dataFeeder.csv").circular)
@@ -27,7 +28,7 @@ class RadiusSimulation extends Simulation {
             "Called-Station-Id" -> "${Called-Station-Id}",
           ))
         .authenticate())
-    /*.exec(
+    .exec(
       radius("Acct Start")
         .username("${username}")
         .properties(
@@ -59,9 +60,9 @@ class RadiusSimulation extends Simulation {
             "Calling-Station-Id" -> "${Calling-Station-Id}",
             "Called-Station-Id" -> "${Called-Station-Id}",
           ))
-        .accountStop())*/
+        .accountStop())
 
-  setUp(scn.inject(atOnceUsers(1)))
+  setUp(scn.inject(atOnceUsers(1000)))
     .protocols(radiusProtocol)
 }
 

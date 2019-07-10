@@ -16,14 +16,14 @@ case class RadiusDslBuilderPassword(configuration: GatlingConfiguration, request
   // Password is optional for Accounting requests
   def password(password: Expression[String]): RadiusDslBuilderProperties = RadiusDslBuilderProperties(configuration, requestName, username, password)
 
-  def properties(properties: Map[String, Expression[Any]]) = RadiusDslBuilder(RadiusAttributes(requestName, username, None, properties), configuration)
+  def properties(properties: Map[String, Expression[Any]]) = RadiusDslBuilder(configuration, RadiusAttributes(requestName, username, None, properties))
 }
 
 case class RadiusDslBuilderProperties(configuration: GatlingConfiguration, requestName: String, username: Expression[String], password: Expression[String]) {
-  def properties(properties: Map[String, Expression[Any]]) = RadiusDslBuilder(RadiusAttributes(requestName, username, Some(password), properties), configuration)
+  def properties(properties: Map[String, Expression[Any]]) = RadiusDslBuilder(configuration, RadiusAttributes(requestName, username, Some(password), properties))
 }
 
-case class RadiusDslBuilder(radiusAttributes: RadiusAttributes, configuration: GatlingConfiguration) {
+case class RadiusDslBuilder(onfiguration: GatlingConfiguration, radiusAttributes: RadiusAttributes) {
   def authenticate(): ActionBuilder = radiusActionBuilder(Type.ACCESS_REQUEST, radiusAttributes, configuration)
 
   def accountStart(): ActionBuilder = radiusActionBuilder(Type.ACCOUNT_START, radiusAttributes, configuration)

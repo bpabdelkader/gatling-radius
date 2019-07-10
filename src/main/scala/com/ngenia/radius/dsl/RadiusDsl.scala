@@ -1,7 +1,8 @@
 package com.ngenia.radius.dsl
 
-import com.ngenia.radius.protocol._
 import io.gatling.core.config.GatlingConfiguration
+
+import com.ngenia.radius.protocol._
 
 trait RadiusDsl {
 
