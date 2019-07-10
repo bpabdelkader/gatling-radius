@@ -3,7 +3,7 @@
     <groupId>com.ngenia.radius</groupId>
     <artifactId>gatling-radius</artifactId>
     <name>gatling-radius</name>
-    <version>1.0.0</version>
+    <version>1.0.3</version>
     <description>Radius plugin for Gatling 3.0.3</description>
 
     <properties>
