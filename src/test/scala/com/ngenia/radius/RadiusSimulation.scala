@@ -62,7 +62,7 @@ class RadiusSimulation extends Simulation {
           ))
         .accountStop())
 
-  setUp(scn.inject(atOnceUsers(1000)))
+  setUp(scn.inject(atOnceUsers(1)))
     .protocols(radiusProtocol)
 }
 

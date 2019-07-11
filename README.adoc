@@ -1,16 +1,15 @@
 
-= Gatling Plugin for Radius image:https://travis-ci.org/bpabdelkader/gatling-radius.svg?branch=master["Build Status", link="https://travis-ci.org/bpabdelkader/gatling-radius"] image:https://jitpack.io/v/bpabdelkader/gatling-radius.svg["JitPack", link="https://jitpack.io/#bpabdelkader/gatling-radius"]
+= Gatling Plugin for Radius Servers image:https://travis-ci.org/bpabdelkader/gatling-radius.svg?branch=master["Build Status", link="https://travis-ci.org/bpabdelkader/gatling-radius"] image:https://jitpack.io/v/bpabdelkader/gatling-radius.svg["JitPack", link="https://jitpack.io/#bpabdelkader/gatling-radius"]
 
 == Introduction
 
-Support for load testing Radius endpoints using Gatling 3.x.x
-
+Plugin based on tinyradius library for load testing Radius endpoints using Gatling 3.1.3 
 
 == Usage
 
 ==== Declare Maven Project dependency 
 
-===== Add the JitPack repository to your build file
+====== Add the JitPack repository to your build file
 ```scala
 <repositories>
     <repository>
@@ -19,8 +18,7 @@ Support for load testing Radius endpoints using Gatling 3.x.x
     </repository>
 </repositories>
 ```
-
-===== Add the dependency
+====== Add the dependency
 ```scala
 <dependency>
     <groupId>com.github.bpabdelkader</groupId>
@@ -29,76 +27,82 @@ Support for load testing Radius endpoints using Gatling 3.x.x
 </dependency>
 ```
 ==== Declare Radius Protocol
-
 ```scala
 implicit val radiusProtocol: RadiusProtocol = radius
 	.host("127.0.0.1")
 	.sharedKey("mySharedKey")
-	.replyTimeout(1000)
-
+	.replyTimeout(1000) // replyTimeout in ms
+```
+==== Declare a test Scenario, which consists in: 
+  
+====== A data csv feeder with the essential parameters to send Radius requests(Other parameters could be used as well)
+```scala
+	username,password,NAS-Identifier,NAS-IP-Address,Calling-Station-Id,Called-Station-Id
+	username0001,password0001,OPERATOR,1.2.3.4,33012345678,OPERATOR
+	username0002,password0002,OPERATOR,1.2.3.4,33012345679,OPERATOR
+	username0003,password0003,OPERATOR,1.2.3.4,33012345680,OPERATOR
+```
+====== Following Radius requests:
+```scala
+- Authentication Access Request => authenticate()
+- Accounting Start		=> accountStart()
+- Accounting Interim Update	=> interimUpdate()
+- Accounting Stop		=> accountStop()
 ```
 
-==== Declare a test Scenario, which includes: 
-  
-  - Authentication Access Request
-  - Accounting Start
-  - Accounting Interim Update
-  - Accounting Stop
-
 ```scala
-val scn = scenario("Access Request")
+ val scn = scenario("Access Request")
+    .feed(csv("data/dataFeeder.csv").circular)
     .exec(
       radius("Access Request")
-        .username("login01")
-        .password("passwd01")
+        .username("${username}")
+        .password("${password}")
         .properties(
           Map(
-            "NAS-Identifier" -> "AANDT",
-            "NAS-IP-Address" -> "1.2.3.4",
-            "Calling-Station-Id" -> "3309567846",
-            "Called-Station-Id" -> "TESTING",
+            "NAS-Identifier" -> "${NAS-Identifier}",
+            "NAS-IP-Address" -> "${NAS-IP-Address}",
+            "Calling-Station-Id" -> "${Calling-Station-Id}",
+            "Called-Station-Id" -> "${Called-Station-Id}",
           ))
         .authenticate())
     .exec(
       radius("Acct Start")
-        .username("login001")
+        .username("${username}")
         .properties(
           Map(
-            "NAS-Identifier" -> "AANDT",
-            "NAS-IP-Address" -> "1.2.3.4",
-            "Calling-Station-Id" -> "3309567846",
-            "Called-Station-Id" -> "TESTING",
+            "NAS-Identifier" -> "${NAS-Identifier}",
+            "NAS-IP-Address" -> "${NAS-IP-Address}",
+            "Calling-Station-Id" -> "${Calling-Station-Id}",
+            "Called-Station-Id" -> "${Called-Station-Id}",
           ))
         .accountStart())
     .exec(
       radius("Interim Update")
-        .username("login001")
+        .username("${username}")
         .properties(
           Map(
-            "NAS-Identifier" -> "AANDT",
-            "NAS-IP-Address" -> "1.2.3.4",
-            "Calling-Station-Id" -> "3309567846",
-            "Called-Station-Id" -> "TESTING",
+            "NAS-Identifier" -> "${NAS-Identifier}",
+            "NAS-IP-Address" -> "${NAS-IP-Address}",
+            "Calling-Station-Id" -> "${Calling-Station-Id}",
+            "Called-Station-Id" -> "${Called-Station-Id}",
           ))
         .interimUpdate())
     .exec(
       radius("Acct Stop")
-        .username("login001")
+        .username("${username}")
         .properties(
           Map(
-            "NAS-Identifier" -> "AANDT",
-            "NAS-IP-Address" -> "1.2.3.4",
-            "Calling-Station-Id" -> "3309567846",
-            "Called-Station-Id" -> "TESTING",
+            "NAS-Identifier" -> "${NAS-Identifier}",
+            "NAS-IP-Address" -> "${NAS-IP-Address}",
+            "Calling-Station-Id" -> "${Calling-Station-Id}",
+            "Called-Station-Id" -> "${Called-Station-Id}",
           ))
-        .accountStop()
-    )
+        .accountStop())
 
-  setUp(scn.inject(atOnceUsers(1))).protocols(radiusProtocol)
+ setUp(scn.inject(atOnceUsers(1)))
+  .protocols(radiusProtocol)
 }
 ```
-
-
 == Run
 
 Run single simulation implemented in `com.ngenia.radius.RadiusSimulation` class through:
@@ -202,4 +206,4 @@ image:https://i.postimg.cc/wxXzKGpF/intellij.png["Build Status", link="https://i
 
 == License
 
-Released under the [MIT License](http://www.opensource.org/licenses/MIT).
+Released under the [LGPL License](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
