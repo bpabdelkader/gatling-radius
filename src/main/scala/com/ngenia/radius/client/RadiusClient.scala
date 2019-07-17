@@ -80,6 +80,7 @@ object RadiusClient {
       accountingRequest = new AccountingRequest(
         resolvedUsername,
         requestType match {
+          case Type.ACCESS_REQUEST => 0
           case Type.ACCOUNT_START => 1
           case Type.ACCOUNT_STOP => 2
           case Type.ACCOUNT_INTERIM_UPDATE => 3

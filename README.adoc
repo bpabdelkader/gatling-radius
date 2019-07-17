@@ -25,7 +25,7 @@ This version requires Gatling 3.1.3
 <dependency>
     <groupId>com.github.bpabdelkader</groupId>
     <artifactId>gatling-radius</artifactId>
-   <version>1.0.0</version>
+   <version>1.0.5</version>
 </dependency>
 ```
 ==== Declare Radius Protocol
@@ -39,11 +39,32 @@ implicit val radiusProtocol: RadiusProtocol = radius
   
 ====== A data csv feeder with the essential parameters to send Radius requests(Other parameters could be used as well)
 ```scala
-	username,password,NAS-Identifier,NAS-IP-Address,Calling-Station-Id,Called-Station-Id
-	username0001,password0001,OPERATOR,1.2.3.4,33012345678,OPERATOR
-	username0002,password0002,OPERATOR,1.2.3.4,33012345679,OPERATOR
-	username0003,password0003,OPERATOR,1.2.3.4,33012345680,OPERATOR
+username,password,NAS-Identifier,NAS-IP-Address,Calling-Station-Id,Called-Station-Id
+username0001,password0001,OPERATOR,1.2.3.4,33012345678,OPERATOR
+username0002,password0002,OPERATOR,1.2.3.4,33012345679,OPERATOR
+username0003,password0003,OPERATOR,1.2.3.4,33012345680,OPERATOR
 ```
+_Loading feeder files in memory uses a lot of heap, expect a 5-to-10-times ratio with the file size.
+ This is due to JVM’s internal UTF-16 char encoding and object headers overhead.
+ It's better to create custom Iterator =>_
+```scala 
+val loginFeeder =
+    (for (i <- 300001 until 300010)
+      yield Map(
+        "username" -> s"login$i",
+        "password" -> s"passwd$i"
+      )).circular
+```_
+====== Map used to store Radius request properties
+```scala
+val radiusProperties: Map[String, Expression[Any]] = Map(
+    "NAS-Identifier" -> "${NAS-Identifier}",
+    "NAS-IP-Address" -> "${NAS-IP-Address}",
+    "Calling-Station-Id" -> "${Calling-Station-Id}",
+    "Called-Station-Id" -> "${Called-Station-Id}"
+  )
+```
+
 ====== Following Radius requests:
 ```scala
 - Authentication Access Request => authenticate()
@@ -53,56 +74,35 @@ implicit val radiusProtocol: RadiusProtocol = radius
 ```
 
 ```scala
- val scn = scenario("Access Request")
-    .feed(csv("data/dataFeeder.csv").circular)
-    .exec(
-      radius("Access Request")
-        .username("${username}")
-        .password("${password}")
-        .properties(
-          Map(
-            "NAS-Identifier" -> "${NAS-Identifier}",
-            "NAS-IP-Address" -> "${NAS-IP-Address}",
-            "Calling-Station-Id" -> "${Calling-Station-Id}",
-            "Called-Station-Id" -> "${Called-Station-Id}",
-          ))
-        .authenticate())
-    .exec(
-      radius("Acct Start")
-        .username("${username}")
-        .properties(
-          Map(
-            "NAS-Identifier" -> "${NAS-Identifier}",
-            "NAS-IP-Address" -> "${NAS-IP-Address}",
-            "Calling-Station-Id" -> "${Calling-Station-Id}",
-            "Called-Station-Id" -> "${Called-Station-Id}",
-          ))
-        .accountStart())
-    .exec(
-      radius("Interim Update")
-        .username("${username}")
-        .properties(
-          Map(
-            "NAS-Identifier" -> "${NAS-Identifier}",
-            "NAS-IP-Address" -> "${NAS-IP-Address}",
-            "Calling-Station-Id" -> "${Calling-Station-Id}",
-            "Called-Station-Id" -> "${Called-Station-Id}",
-          ))
-        .interimUpdate())
-    .exec(
-      radius("Acct Stop")
-        .username("${username}")
-        .properties(
-          Map(
-            "NAS-Identifier" -> "${NAS-Identifier}",
-            "NAS-IP-Address" -> "${NAS-IP-Address}",
-            "Calling-Station-Id" -> "${Calling-Station-Id}",
-            "Called-Station-Id" -> "${Called-Station-Id}",
-          ))
-        .accountStop())
+val scn = scenario("Radius Scenario")
+  .feed(dataFeeder)
+  .exec(
+    radius("Access Request")
+      .username("${username}")
+      .password("${password}")
+      .properties(radiusProperties)
+      .authenticate())
+  .exec(
+    radius("Acct Start")
+      .username("${username}")
+      .properties(radiusProperties)
+      .accountStart())
+  .exec(
+    radius("Interim Update")
+      .username("${username}")
+      .properties(radiusProperties)
+      .interimUpdate())
+  .exec(
+    radius("Acct Stop")
+      .username("${username}")
+      .properties(radiusProperties)
+      .accountStop())
 
- setUp(scn.inject(atOnceUsers(1)))
-  .protocols(radiusProtocol)
+ setUp(
+    scn.inject(
+      constantUsersPerSec(1000) during (15)
+    )
+  ).protocols(radiusProtocol)
 }
 ```
 == Run
@@ -152,39 +152,39 @@ log4j:WARN No appenders could be found for logger (org.tinyradius.util.RadiusCli
 log4j:WARN Please initialize the log4j system properly.
 
 ================================================================================
-2019-07-01 14:46:27                                           0s elapsed
+2019-07-17 14:39:17                                          90s elapsed
 ---- Requests ------------------------------------------------------------------
-> Global                                                   (OK=4      KO=0     )
-> Access Request                                           (OK=1      KO=0     )
-> Acct Start                                               (OK=1      KO=0     )
-> Interim Update                                           (OK=1      KO=0     )
-> Acct Stop                                                (OK=1      KO=0     )
+> Global                                                   (OK=60000  KO=0     )
+> Access Request                                           (OK=15000  KO=0     )
+> Acct Start                                               (OK=15000  KO=0     )
+> Interim Update                                           (OK=15000  KO=0     )
+> Acct Stop                                                (OK=15000  KO=0     )
 
----- Access Request ------------------------------------------------------------
+---- Radius Scenario -----------------------------------------------------------
 [##########################################################################]100%
-waiting: 0      / active: 0      / done: 1
+          waiting: 0      / active: 0      / done: 15000 
 ================================================================================
 
-Simulation com.ngenia.radius.RadiusSimulation completed in 0 seconds
+Simulation com.ngenia.radius.RadiusSimulation completed in 90 seconds
 Parsing log file(s)...
 Parsing log file(s) done
 Generating reports...
 
 ================================================================================
 ---- Global Information --------------------------------------------------------
-> request count                                          4 (OK=4      KO=0     )
-> min response time                                      0 (OK=0      KO=-     )
-> max response time                                     21 (OK=21     KO=-     )
-> mean response time                                     5 (OK=5      KO=-     )
-> std deviation                                          9 (OK=9      KO=-     )
-> response time 50th percentile                          0 (OK=0      KO=-     )
-> response time 75th percentile                          5 (OK=5      KO=-     )
-> response time 95th percentile                         18 (OK=18     KO=-     )
-> response time 99th percentile                         20 (OK=20     KO=-     )
-> mean requests/sec                                      4 (OK=4      KO=-     )
+> request count                                      60000 (OK=60000  KO=0     )
+> min response time                                     12 (OK=12     KO=-     )
+> max response time                                   1036 (OK=1036   KO=-     )
+> mean response time                                    36 (OK=36     KO=-     )
+> std deviation                                         31 (OK=31     KO=-     )
+> response time 50th percentile                         28 (OK=28     KO=-     )
+> response time 75th percentile                         43 (OK=43     KO=-     )
+> response time 95th percentile                         85 (OK=85     KO=-     )
+> response time 99th percentile                        148 (OK=148    KO=-     )
+> mean requests/sec                                659.341 (OK=659.341 KO=-     )
 ---- Response Time Distribution ------------------------------------------------
-> t < 800 ms                                             4 (100%)
-> 800 ms < t < 1200 ms                                   0 (  0%)
+> t < 800 ms                                         59985 (100%)
+> 800 ms < t < 1200 ms                                  15 (  0%)
 > t > 1200 ms                                            0 (  0%)
 > failed                                                 0 (  0%)
 ================================================================================
@@ -195,7 +195,7 @@ Please open the following file: \gatling-radius\target\gatling\radiussimulation-
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
 [INFO] Total time: 11.982 s
-[INFO] Finished at: 2019-07-01T14:46:27+02:00
+[INFO] Finished at: 2019-07-17T14:39:18+02:00
 [INFO] Final Memory: 19M/981M
 [INFO] ------------------------------------------------------------------------
 ```
@@ -204,7 +204,13 @@ Please open the following file: \gatling-radius\target\gatling\radiussimulation-
 
 RadiusSimulation.class is Runnable, thus the test scenario could be run directly from the intellij test package
 
-image:https://i.postimg.cc/wxXzKGpF/intellij.png["Build Status", link="https://i.postimg.cc/wxXzKGpF/intellij.png"]
+image:https://i.postimg.cc/wxXzKGpF/intellij.png[]
+
+== Results
+
+As an example, the above scenario generate a constant throughput of 800 Requests/sec for 15 seconds simulation:
+
+image:https://i.postimg.cc/SNsJCfNK/Throughput.png[]
 
 == License
 
