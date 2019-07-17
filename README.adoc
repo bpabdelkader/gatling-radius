@@ -54,7 +54,7 @@ val loginFeeder =
         "username" -> s"login$i",
         "password" -> s"passwd$i"
       )).circular
-```_
+```
 ====== Map used to store Radius request properties
 ```scala
 val radiusProperties: Map[String, Expression[Any]] = Map(
