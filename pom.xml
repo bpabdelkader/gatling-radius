@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.ngenia.radius</groupId>
+    <groupId>com.ngenia.gatling.radius</groupId>
     <artifactId>gatling-radius</artifactId>
     <name>gatling-radius</name>
-    <version>1.0.3</version>
+    <version>1.0.6</version>
     <description>Radius plugin for Gatling 3.0.3</description>
 
     <properties>

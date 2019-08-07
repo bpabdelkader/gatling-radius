@@ -1,0 +1,4 @@
+username,password,NAS-Identifier,NAS-IP-Address,Calling-Station-Id,Called-Station-Id
+	username0001,password0001,OPERATOR,1.2.3.4,33012345678,OPERATOR
+	username0002,password0002,OPERATOR,1.2.3.4,33012345679,OPERATOR
+	username0003,password0003,OPERATOR,1.2.3.4,33012345680,OPERATOR
