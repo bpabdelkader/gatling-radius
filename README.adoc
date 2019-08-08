@@ -1,5 +1,5 @@
 
-= Gatling Plugin for Radius Servers image:https://travis-ci.org/bpabdelkader/gatling-radius.svg?branch=master["Build Status", link="https://travis-ci.org/bpabdelkader/gatling-radius"] image:https://jitpack.io/v/bpabdelkader/gatling-radius.svg["JitPack", link="https://jitpack.io/#bpabdelkader/gatling-radius"]
+= Gatling Plugin for Radius Servers image:https://travis-ci.org/bpabdelkader/gatling-radius.svg?branch=master["Build Status", link="https://travis-ci.org/bpabdelkader/gatling-radius"] image:https://sonarcloud.io/api/project_badges/measure?project=bpabdelkader_gatling-radius&metric=alert_status["Quality Gate Status", link="https://sonarcloud.io/dashboard?id=bpabdelkader_gatling-radius"] image:https://jitpack.io/v/bpabdelkader/gatling-radius.svg["JitPack", link="https://jitpack.io/#bpabdelkader/gatling-radius"]
 
 == Introduction
 
