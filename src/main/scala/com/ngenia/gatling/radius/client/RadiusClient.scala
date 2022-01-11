@@ -25,6 +25,8 @@ object RadiusClient {
       radiusProtocol.host,
       radiusProtocol.sharedKey)
 
+    radiusProtocol.authPort.foreach(radiusClient.setAuthPort(_))
+    radiusProtocol.acctPort.foreach(radiusClient.setAcctPort(_))
     radiusClient.setSocketTimeout(radiusProtocol.replyTimeout)
 
     val response: (Option[RadiusPacket], (Status, Option[String])) =
