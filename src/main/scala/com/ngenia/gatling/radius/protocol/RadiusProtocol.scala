@@ -28,6 +28,8 @@ object RadiusProtocol {
 
 case class RadiusProtocol(
                            host: String,
+                           authPort: Option[Int],
+                           acctPort: Option[Int],
                            sharedKey: String,
                            replyTimeout: Int,
                          ) extends Protocol {
